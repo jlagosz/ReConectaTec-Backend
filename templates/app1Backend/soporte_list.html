@@ -1,0 +1,89 @@
+{% extends 'app1Backend/base.html' %}
+{% load static %}
+
+{# Define el título específico para esta página #}
+{% block title %}Gestión de Soportes{% endblock %}
+
+{# Contenido principal de la página de listado de soportes #}
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Encabezado de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gestión de Soportes</h1>
+        <a href="{% url 'soporte-create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Crear Ticket de Soporte
+        </a>
+    </div>
+
+    <!-- Tarjeta que contendrá la tabla -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Listado de Tickets de Soporte Registrados</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID Ticket</th>
+                            <th>Asignación (Institución)</th>
+                            <th>Técnico</th>
+                            <th>Tipo</th>
+                            <th>Fecha del Evento</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Iteramos sobre la lista de soportes #}
+                        {% for item in object_list %}
+                        <tr>
+                            <td>{{ item.id_soporte }}</td>
+                            <td>
+                                Asig. #{{ item.id_asignacion.id_asignacion }} 
+                                ({{ item.id_asignacion.rut_institucion_receptora.nombre }})
+                            </td>
+                            <td>{{ item.id_tecnico.nombre|default:'No asignado' }} {{ item.id_tecnico.apellido|default:'' }}</td>
+                            <td>
+                                {# Usamos condicionales para mostrar badges de colores según el tipo #}
+                                {% if item.tipo == 'Capacitacion' %}
+                                    <span class="badge bg-info">{{ item.tipo }}</span>
+                                {% elif item.tipo == 'Mantencion' %}
+                                    <span class="badge bg-secondary">{{ item.tipo }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ item.tipo }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.fecha_evento|date:"d/m/Y" }}</td>
+                            <td class="text-center">
+                                <!-- Botón para Modificar -->
+                                <a href="{% url 'soporte-update' item.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Modificar">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <!-- Botón para Eliminar, configurado para abrir el modal -->
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteConfirmationModal"
+                                        data-bs-item-name="el ticket de soporte #{{ item.id_soporte }}"
+                                        data-bs-delete-url="{% url 'soporte-delete' item.pk %}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {# Si la lista está vacía, mostramos este mensaje #}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                No hay tickets de soporte registrados todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,169 @@
+/* =========================================
+ESTILOS GLOBALES Y PALETA DE COLORES
+=========================================
+*/
+
+/* Definimos una paleta de colores en variables CSS para fácil mantenimiento */
+:root {
+    --primary-color: #0d6efd; /* Azul principal de Bootstrap */
+    --secondary-color: #6c757d; /* Gris secundario */
+    --light-gray: #f8f9fa; /* Gris muy claro para fondos */
+    --dark-blue: #2c3e50; /* Azul oscuro para el texto y la barra lateral */
+    --sidebar-width: 260px; /* Ancho de la barra lateral */
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Sombra suave para elementos */
+}
+
+body {
+    background-color: var(--light-gray);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif; /* Usamos una fuente más moderna, importada en base.html */
+    transition: margin-left .5s; /* Animación suave para el contenido principal */
+    padding-top: 20px;
+}
+
+/* =========================================
+ESTILOS DE LA BARRA LATERAL (SIDEBAR)
+=========================================
+*/
+.sidebar {
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    width: var(--sidebar-width);
+    position: fixed; /* Fija en la pantalla */
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: var(--dark-blue);
+    padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .sidebar-header {
+    padding: 10px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar .sidebar-header a {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.sidebar .sidebar-header i {
+    color: #b8b517; /* Un toque de color cian para el ícono */
+}
+
+.sidebar .nav-link {
+    font-size: 1rem;
+    color: #bdadad; /* Color de los enlaces inactivos */
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link i {
+    margin-right: 15px;
+    width: 20px; /* Ancho fijo para alinear íconos */
+    text-align: center;
+}
+
+/* Estilo para el enlace activo y al pasar el mouse */
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--primary-color);
+    padding-left: 17px; /* Compensamos el borde */
+}
+
+/* =========================================
+ESTILOS DEL CONTENIDO PRINCIPAL
+=========================================
+*/
+.main-content {
+    margin-left: var(--sidebar-width); /* Deja espacio para la barra lateral */
+    padding: 2rem;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* =========================================
+ESTILOS PARA TARJETAS Y TABLAS
+=========================================
+*/
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+}
+
+.table {
+    vertical-align: middle; /* Centra verticalmente el contenido de las celdas */
+}
+
+/* Para resaltar la cabecera de la tabla */
+.table thead th {
+    background-color: var(--light-gray);
+    border-bottom: 2px solid #e3e6f0;
+    font-weight: 500;
+}
+
+/* =========================================
+ESTILOS PARA BOTONES Y FORMULARIOS
+=========================================
+*/
+.btn {
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.form-control, .form-select {
+    border-radius: 5px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(252, 252, 252, 0.25);
+}
+
+
+/* =========================================
+ESTILOS PARA MENSAJES DE DJANGO (ALERTS)
+=========================================
+*/
+.alert {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.alert::before {
+    /* Agregamos un ícono de Font Awesome antes del texto */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 10px;
+}
+
+.alert-success::before {
+    content: "\f058"; /* Ícono de check-circle */
+}
+
+.alert-error::before,
+.alert-danger::before {
+    content: "\f071"; /* Ícono de exclamation-triangle */
+}
+
+.alert-warning::before {
+    content: "\f06a"; /* Ícono de exclamation-circle */
+}
+

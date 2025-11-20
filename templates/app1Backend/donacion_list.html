@@ -1,0 +1,86 @@
+{% extends 'app1Backend/base.html' %}
+{% load static %}
+
+{# Define el título específico para esta página #}
+{% block title %}Gestión de Donaciones{% endblock %}
+
+{# Contenido principal de la página de listado de donaciones #}
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Encabezado de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gestión de Donaciones</h1>
+        <a href="{% url 'donacion-create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Registrar Nueva Donación
+        </a>
+    </div>
+
+    <!-- Tarjeta que contendrá la tabla -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Listado de Donaciones Registradas</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Institución Donante</th>
+                            <th>Fecha de Oferta</th>
+                            <th>Estado</th>
+                            <th>Total de Equipos</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Iteramos sobre la lista de donaciones que nos pasa la vista #}
+                        {% for donacion in object_list %}
+                        <tr>
+                            <td>{{ donacion.id_donacion }}</td>
+                            <td>{{ donacion.rut_institucion.nombre }}</td>
+                            <td>{{ donacion.fecha_oferta|date:"d/m/Y" }}</td>
+                            <td>
+                                {# Usamos condicionales para mostrar badges de colores según el estado #}
+                                {% if donacion.estado == 'Recibida' %}
+                                    <span class="badge bg-success">{{ donacion.estado }}</span>
+                                {% elif donacion.estado == 'Pendiente' %}
+                                    <span class="badge bg-warning text-dark">{{ donacion.estado }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ donacion.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ donacion.total_equipos }}</td>
+                            <td class="text-center">
+                                <!-- Botón para Modificar -->
+                                <a href="{% url 'donacion-update' donacion.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Modificar">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <!-- Botón para Eliminar, configurado para abrir el modal -->
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteConfirmationModal"
+                                        data-bs-item-name="Donación #{{ donacion.id_donacion }} de {{ donacion.rut_institucion.nombre }}"
+                                        data-bs-delete-url="{% url 'donacion-delete' donacion.pk %}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {# Si la lista está vacía, mostramos este mensaje #}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                No hay donaciones registradas todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

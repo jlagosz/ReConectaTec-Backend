@@ -1,0 +1,41 @@
+# --- 1. Seguridad y Variables de Entorno (¡MUY IMPORTANTE!) ---
+.env
+.env.local
+.env.*
+
+# --- 2. Python (Archivos compilados) ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- 3. Entornos Virtuales (Donde instalas las librerías) ---
+venv/
+env/
+.venv/
+.env/
+
+# --- 4. Django ---
+# Base de datos por defecto (si alguna vez la usas, mejor ignorarla)
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos de log (errores)
+*.log
+
+# Archivos estáticos recolectados (solo necesarios en producción)
+staticfiles/
+
+# Archivos subidos por usuarios (Media)
+# Ignoramos los archivos dentro, pero mantenemos la carpeta si hay un .gitkeep
+/media/*
+!/media/.gitkeep
+
+# --- 5. Configuración de IDEs (Visual Studio Code, PyCharm, etc.) ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --- 6. Archivos del Sistema Operativo (Basura) ---
+.DS_Store
+Thumbs.db   

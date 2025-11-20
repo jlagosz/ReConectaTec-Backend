@@ -1,0 +1,77 @@
+{% extends 'app1Backend/base.html' %}
+{% load static %}
+
+{# Define un título dinámico. Si 'object' existe, estamos modificando. Si no, estamos creando. #}
+{% block title %}
+    {% if object %}
+        Modificar Institución
+    {% else %}
+        Agregar Nueva Institución
+    {% endif %}
+{% endblock %}
+
+{# Contenido principal de la página del formulario #}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        {% if object %}
+                            <i class="fas fa-edit me-2"></i>Editando a: {{ object.nombre }}
+                        {% else %}
+                            <i class="fas fa-plus-circle me-2"></i>Formulario de Nueva Institución
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- El formulario se enviará a la URL actual usando el método POST -->
+                    <form method="post">
+                        <!-- Token de seguridad CSRF, obligatorio en Django -->
+                        {% csrf_token %}
+
+                        <!-- Usamos un bucle para renderizar cada campo del formulario.
+                             Esto nos da más control sobre el HTML que si usáramos {{ form.as_p }}. -->
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <!-- Etiqueta del campo -->
+                                {{ field.label_tag }}
+                                
+                                <!-- El campo del formulario (input, select, etc.) -->
+                                {{ field }}
+                                
+                                <!-- Si el campo tiene errores de validación, se muestran aquí -->
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ field.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Texto de ayuda para el campo, si existe -->
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <hr>
+                        <!-- Botones de acción del formulario -->
+                        <div class="d-flex justify-content-end">
+                            <a href="{% url 'institucion-list' %}" class="btn btn-secondary me-2">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
