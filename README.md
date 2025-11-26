@@ -100,7 +100,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Accede a https://www.google.com/search?q=http://127.0.0.1:8000/ en tu navegador.
+Accede a http://127.0.0.1:8000/ en tu navegador.
 
 ## Gestión de Usuarios y Roles
 
