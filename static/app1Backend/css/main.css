@@ -3,22 +3,26 @@ ESTILOS GLOBALES Y PALETA DE COLORES
 =========================================
 */
 
-/* Definimos una paleta de colores en variables CSS para fácil mantenimiento */
 :root {
-    --primary-color: #0d6efd; /* Azul principal de Bootstrap */
-    --secondary-color: #6c757d; /* Gris secundario */
-    --light-gray: #f8f9fa; /* Gris muy claro para fondos */
-    --dark-blue: #2c3e50; /* Azul oscuro para el texto y la barra lateral */
-    --sidebar-width: 260px; /* Ancho de la barra lateral */
-    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Sombra suave para elementos */
+    --primary-color: #3c8dbc; /* Azul similar al de la imagen para items activos */
+    --secondary-color: #6c757d;
+    --light-gray: #ecf0f5; /* Un gris muy suave para el fondo general */
+    --sidebar-bg: #222d32; /* El color oscuro "gunmetal" de la imagen */
+    --sidebar-active-bg: #1e282c; /* Un tono ligeramente más oscuro para el item activo */
+    --text-color-sidebar: #b8c7ce; /* Texto gris claro del sidebar */
+    --text-color-hover: #ffffff;
+    --sidebar-width: 250px;
+    --box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 }
 
 body {
     background-color: var(--light-gray);
-    color: #ffffff;
-    font-family: 'Poppins', sans-serif; /* Usamos una fuente más moderna, importada en base.html */
-    transition: margin-left .5s; /* Animación suave para el contenido principal */
+    color: #333333; /* Texto oscuro para el contenido principal (importante para legibilidad) */
+    font-family: 'Poppins', sans-serif;
+    transition: margin-left .3s;
     padding-top: 20px;
+    margin: 0;
+    overflow-x: hidden;
 }
 
 /* =========================================
@@ -26,66 +30,99 @@ ESTILOS DE LA BARRA LATERAL (SIDEBAR)
 =========================================
 */
 .sidebar {
-    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    height: 100vh;
     width: var(--sidebar-width);
-    position: fixed; /* Fija en la pantalla */
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
-    background-color: var(--dark-blue);
-    padding-top: 20px;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--sidebar-bg);
+    transition: all 0.3s;
 }
 
+/* Header del Sidebar (Nombre de la App) */
 .sidebar .sidebar-header {
-    padding: 10px 20px;
-    text-align: center;
-    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #367fa9; 
+    background-color: var(--sidebar-bg); 
 }
 
-.sidebar .sidebar-header a {
-    color: #fff;
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-decoration: none;
+.sidebar .sidebar-header h4 {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
 }
 
-.sidebar .sidebar-header i {
-    color: #b8b517; /* Un toque de color cian para el ícono */
-}
-
+/* Enlaces del Sidebar */
 .sidebar .nav-link {
-    font-size: 1rem;
-    color: #bdadad; /* Color de los enlaces inactivos */
+    font-size: 0.95rem;
+    color: var(--text-color-sidebar);
     padding: 12px 20px;
     display: flex;
     align-items: center;
+    border-left: 3px solid transparent;
     transition: all 0.3s ease;
 }
 
 .sidebar .nav-link i {
     margin-right: 15px;
-    width: 20px; /* Ancho fijo para alinear íconos */
+    width: 20px;
     text-align: center;
+    font-size: 1rem;
 }
 
-/* Estilo para el enlace activo y al pasar el mouse */
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
+.sidebar .nav-link span {
+    font-weight: 400;
+}
+
+/* Hover */
+.sidebar .nav-link:hover {
+    color: var(--text-color-hover);
+    background-color: var(--sidebar-active-bg);
+}
+
+/* Item ACTIVO */
+.sidebar li.active .nav-link {
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-left: 3px solid var(--primary-color);
-    padding-left: 17px; /* Compensamos el borde */
+    background-color: var(--sidebar-active-bg); /* Fondo más oscuro */
+    border-left: 4px solid var(--primary-color); /* La línea azul a la izquierda */
+}
+
+/* Botón Cerrar Sesión */
+.btn-logout {
+    color: var(--text-color-sidebar);
+    cursor: pointer;
+}
+.btn-logout:hover {
+    color: #ff6b6b; /* Rojo suave al pasar el mouse */
+    background-color: var(--sidebar-active-bg);
+}
+
+/* Títulos de sección pequeños */
+.sidebar-heading {
+    font-size: 0.75rem;
+    color: #4b646f;
+    letter-spacing: 1px;
 }
 
 /* =========================================
 ESTILOS DEL CONTENIDO PRINCIPAL
 =========================================
 */
+.content-wrapper {
+    width: 100%;
+}
+
 .main-content {
-    margin-left: var(--sidebar-width); /* Deja espacio para la barra lateral */
+    margin-left: var(--sidebar-width);
     padding: 2rem;
-    transition: margin-left 0.3s ease-in-out;
+    transition: margin-left 0.3s;
+    min-height: 85vh;
+}
+
+/* Topbar */
+.topbar {
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s;
 }
 
 /* =========================================
@@ -94,76 +131,61 @@ ESTILOS PARA TARJETAS Y TABLAS
 */
 .card {
     border: none;
-    border-radius: 10px;
-    box-shadow: var(--box-shadow);
+    border-top: 3px solid var(--primary-color); /* Detalle superior azul */
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background-color: #fff;
+    margin-bottom: 20px;
 }
 
 .card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #e3e6f0;
+    background-color: transparent;
+    border-bottom: 1px solid #f4f4f4;
+    padding: 1rem;
     font-weight: 600;
-    padding: 1rem 1.5rem;
+    color: #444;
 }
 
 .table {
-    vertical-align: middle; /* Centra verticalmente el contenido de las celdas */
+    vertical-align: middle;
 }
 
-/* Para resaltar la cabecera de la tabla */
 .table thead th {
-    background-color: var(--light-gray);
-    border-bottom: 2px solid #e3e6f0;
-    font-weight: 500;
+    background-color: #fff;
+    border-bottom: 2px solid #f4f4f4;
+    font-weight: 600;
+    color: #444;
 }
 
 /* =========================================
 ESTILOS PARA BOTONES Y FORMULARIOS
 =========================================
 */
-.btn {
-    border-radius: 5px;
-    padding: 8px 16px;
-    font-weight: 500;
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #367fa9;
+    border-color: #367fa9;
 }
 
 .form-control, .form-select {
-    border-radius: 5px;
+    border-radius: 3px;
+    border: 1px solid #d2d6de;
 }
 
 .form-control:focus, .form-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.25rem rgba(252, 252, 252, 0.25);
+    box-shadow: none; /* Estilo más plano */
 }
 
-
 /* =========================================
-ESTILOS PARA MENSAJES DE DJANGO (ALERTS)
+ALERTS
 =========================================
 */
 .alert {
-    display: flex;
-    align-items: center;
-    border-radius: 8px;
-    padding: 1rem;
+    border-radius: 3px;
+    border: none;
 }
-
-.alert::before {
-    /* Agregamos un ícono de Font Awesome antes del texto */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    margin-right: 10px;
-}
-
-.alert-success::before {
-    content: "\f058"; /* Ícono de check-circle */
-}
-
-.alert-error::before,
-.alert-danger::before {
-    content: "\f071"; /* Ícono de exclamation-triangle */
-}
-
-.alert-warning::before {
-    content: "\f06a"; /* Ícono de exclamation-circle */
-}
-

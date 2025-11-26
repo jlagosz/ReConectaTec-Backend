@@ -105,6 +105,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 # =========================================================
 
 class Institucion(models.Model):
+    #agregar id
     rut = models.CharField(db_column='RUT', primary_key=True, max_length=12)
     nombre = models.CharField(db_column='Nombre', max_length=255)
     tipo = models.CharField(db_column='Tipo', max_length=9)
