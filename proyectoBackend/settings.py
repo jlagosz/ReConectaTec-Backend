@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app1Backend',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -157,3 +158,14 @@ SESSION_COOKIE_AGE = 1800
 SESSION_SAVE_EVERY_REQUEST = True
 
 AUTH_USER_MODEL = 'app1Backend.Usuario'
+
+REST_FRAMEWORK = {
+    # Solo permite acceso a usuarios con is_staff=True (Administradores)
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}

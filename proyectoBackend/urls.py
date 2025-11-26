@@ -28,9 +28,21 @@ Este archivo enruta las URLs a las vistas correspondientes definidas
 en la aplicación app1Backend.
 """
 from django.contrib import admin
-from django.urls import path
-from django.contrib.auth import views as auth_views # Vistas de Autenticación integradas de Django
-from app1Backend import views # Tus vistas personalizadas (dashboard, CRUDs, etc.)
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from app1Backend import views
+from rest_framework.routers import DefaultRouter
+from app1Backend import api_views
+
+# Configuración del Router de la API
+router = DefaultRouter()
+router.register(r'instituciones', api_views.InstitucionViewSet)
+router.register(r'usuarios', api_views.UsuarioViewSet)
+router.register(r'donaciones', api_views.DonacionViewSet)
+router.register(r'equipos', api_views.EquipoViewSet)
+router.register(r'asignaciones', api_views.AsignacionViewSet)
+router.register(r'reacondicionamientos', api_views.ReacondicionamientoViewSet)
+router.register(r'soportes', api_views.SoporteViewSet)
 
 urlpatterns = [
     # ----------------------------------------------------
@@ -108,4 +120,7 @@ urlpatterns = [
     path('soportes/crear/', views.SoporteCreateView.as_view(), name='soporte-create'),
     path('soportes/modificar/<int:pk>/', views.SoporteUpdateView.as_view(), name='soporte-update'),
     path('soportes/eliminar/<int:pk>/', views.SoporteDeleteView.as_view(), name='soporte-delete'),
+
+    # --- RUTA PARA LA API ---
+    path('api/', include((router.urls, 'api'), namespace='api')),
 ]
