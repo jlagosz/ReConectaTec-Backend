@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from .models import Institucion, Usuario, Donacion, Equipo, Asignacion, DetalleAsignacion, Reacondicionamiento, Soporte
 import re # Para validación de RUT
@@ -250,13 +252,72 @@ class SoporteForm(forms.ModelForm):
             'id_tecnico': 'Técnico Asignado',
         }
 
+class SoporteSolicitudForm(forms.ModelForm):
+    class Meta:
+        model = Soporte
+        fields = ['id_asignacion', 'tipo', 'descripcion']
+        widgets = {
+            'id_asignacion': forms.Select(attrs={'class': 'form-select'}),
+            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe el problema con detalle...'}),
+        }
+        labels = {
+            'id_asignacion': 'Equipo Afectado',
+            'descripcion': 'Detalle del Problema',
+        }
+
 class PerfilUsuarioForm(forms.ModelForm):
-    """Formulario para que el usuario edite sus propios datos básicos."""
+    """
+    Formulario para editar Nombre, Apellido y cambiar Contraseña.
+    El Email se excluye para que no puedan modificarlo.
+    """
+    # Campos para la nueva contraseña
+    new_password = forms.CharField(
+        label="Nueva Contraseña",
+        required=False, # Es opcional, solo si quiere cambiarla
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}),
+        help_text=password_validation.password_validators_help_text_html() # <-- Muestra las instrucciones de Django
+    )
+    confirm_password = forms.CharField(
+        label="Confirmar Nueva Contraseña",
+        required=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'})
+    )
+
     class Meta:
         model = Usuario
-        fields = ['email', 'nombre', 'apellido'] # SOLO estos campos
+        fields = ['nombre', 'apellido'] # Solo permitimos editar esto del modelo directo
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password:
+            # 1. Verificar que coincidan
+            if password != confirm_password:
+                self.add_error('confirm_password', "Las contraseñas no coinciden.")
+            
+            # 2. Verificar seguridad (largo, caracteres, etc) usando la config de Django
+            try:
+                validate_password(password, self.instance)
+            except ValidationError as error:
+                self.add_error('new_password', error)
+        
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data.get("new_password")
+        
+        # Si el usuario escribió una contraseña nueva, la guardamos hasheada
+        if password:
+            user.set_password(password)
+        
+        if commit:
+            user.save()
+        return user

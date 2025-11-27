@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db import IntegrityError
 from django.utils.html import format_html, mark_safe
 from django.db.models import Q # Importante para búsquedas OR (Nombre O ID)
+from django.contrib.auth import update_session_auth_hash
 
 # --- DECORADORES NECESARIOS ---
 from django.utils.decorators import method_decorator
@@ -20,7 +21,7 @@ from .forms import (
     InstitucionForm,
     DonacionForm, EquipoForm, 
     AsignacionForm, ReacondicionamientoForm, SoporteForm,
-    CustomUserCreationForm, CustomUserChangeForm, PerfilUsuarioForm
+    CustomUserCreationForm, CustomUserChangeForm, PerfilUsuarioForm, SoporteSolicitudForm
 )
 
 # =========================================================
@@ -210,13 +211,21 @@ class PerfilUsuarioUpdateView(SuccessMessageUpdateView):
     model = Usuario
     form_class = PerfilUsuarioForm
     template_name = 'app1Backend/usuario_perfil.html'
-    success_url = reverse_lazy('dashboard-redirect') # Al guardar, vuelve al inicio
-    success_message = "¡Tus datos personales han sido actualizados!"
+    success_url = reverse_lazy('dashboard-redirect')
+    success_message = "¡Tu perfil ha sido actualizado exitosamente!"
 
     def get_object(self):
-        # Esta es la CLAVE: No buscamos por PK en la URL, 
-        # sino que devolvemos directamente el usuario que está logueado.
         return self.request.user
+
+    def form_valid(self, form):
+        # Guardamos el usuario con los datos nuevos
+        response = super().form_valid(form)
+        
+        # Si el usuario cambió su contraseña, actualizamos la sesión para que no se desconecte
+        if form.cleaned_data.get('new_password'):
+            update_session_auth_hash(self.request, self.object)
+            
+        return response
 
 # --- CRUD para Donaciones ---
 
@@ -441,7 +450,7 @@ class SoporteListView(ListView):
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class SoporteCreateView(SuccessMessageCreateView):
     model = Soporte
-    form_class = SoporteForm
+    form_class = SoporteSolicitudForm
     template_name = 'app1Backend/soporte_form.html'
     success_url = reverse_lazy('soporte-list')
     success_message = "¡Ticket de soporte creado!"

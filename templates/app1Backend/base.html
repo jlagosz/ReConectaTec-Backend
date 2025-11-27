@@ -120,7 +120,7 @@
             {% if user.is_authenticated %}
             <div class="d-none d-md-block ms-3">
                 <span class="text-gray-600 small">Bienvenido,</span>
-                <span class="fw-bold text-dark">{{ user.nombre }}</span>
+                <span class="fw-bold text-dark">{{ user.nombre }} {{ user.apellido }}</span>
             </div>
             {% endif %}
 
