@@ -20,7 +20,7 @@ from .forms import (
     InstitucionForm,
     DonacionForm, EquipoForm, 
     AsignacionForm, ReacondicionamientoForm, SoporteForm,
-    CustomUserCreationForm, CustomUserChangeForm
+    CustomUserCreationForm, CustomUserChangeForm, PerfilUsuarioForm
 )
 
 # =========================================================
@@ -204,6 +204,19 @@ class UsuarioDeleteView(DeleteView):
             messages.error(request, f"No se puede eliminar al usuario '{self.object}' porque tiene tareas activas.")
             return redirect(self.success_url)
 
+# --- VISTA DE PERFIL DE USUARIO (Cualquier rol) ---
+@method_decorator(login_required(login_url=LOGIN_URL), name='dispatch')
+class PerfilUsuarioUpdateView(SuccessMessageUpdateView):
+    model = Usuario
+    form_class = PerfilUsuarioForm
+    template_name = 'app1Backend/usuario_perfil.html'
+    success_url = reverse_lazy('dashboard-redirect') # Al guardar, vuelve al inicio
+    success_message = "¡Tus datos personales han sido actualizados!"
+
+    def get_object(self):
+        # Esta es la CLAVE: No buscamos por PK en la URL, 
+        # sino que devolvemos directamente el usuario que está logueado.
+        return self.request.user
 
 # --- CRUD para Donaciones ---
 
@@ -231,7 +244,7 @@ class DonacionCreateView(SuccessMessageCreateView):
     success_url = reverse_lazy('donacion-list')
     success_message = "¡Donación registrada exitosamente!"
 
-@method_decorator(user_passes_test(is_admin_or_voluntario, login_url=LOGIN_URL), name='dispatch')
+@method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class DonacionUpdateView(SuccessMessageUpdateView):
     model = Donacion
     form_class = DonacionForm
@@ -239,7 +252,7 @@ class DonacionUpdateView(SuccessMessageUpdateView):
     success_url = reverse_lazy('donacion-list')
     success_message = "¡Donación modificada exitosamente!"
 
-@method_decorator(user_passes_test(is_admin_or_voluntario, login_url=LOGIN_URL), name='dispatch')
+@method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class DonacionDeleteView(DeleteView):
     model = Donacion
     success_url = reverse_lazy('donacion-list')

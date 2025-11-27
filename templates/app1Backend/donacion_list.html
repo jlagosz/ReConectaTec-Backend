@@ -8,17 +8,17 @@
 {% block content %}
 
 <div class="container-fluid">
-    <!-- Encabezado de la página -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Gestión de Donaciones</h1>
+        
         <a href="{% url 'donacion-create' %}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i>Registrar Nueva Donación
         </a>
     </div>
 
-    <form method="get" action="">
+    <form method="get" action="" class="mb-4">
             <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Buscar por ID, Nombre" value="{{ request.GET.q }}">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por ID, Nombre de Institución o RUT" value="{{ request.GET.q }}">
                 <button class="btn btn-primary" type="submit">
                     <i class="fas fa-search"></i> Buscar
                 </button>
@@ -28,9 +28,8 @@
                     </a>
                 {% endif %}
             </div>
-        </form>
+    </form>
 
-    <!-- Tarjeta que contendrá la tabla -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Listado de Donaciones Registradas</h6>
@@ -45,7 +44,10 @@
                             <th>Fecha de Oferta</th>
                             <th>Estado</th>
                             <th>Total de Equipos</th>
+                            
+                            {% if user.rol == 'Administrador' %}
                             <th class="text-center">Acciones</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -66,12 +68,12 @@
                                 {% endif %}
                             </td>
                             <td>{{ donacion.total_equipos }}</td>
+                            
+                            {% if user.rol == 'Administrador' %}
                             <td class="text-center">
-                                <!-- Botón para Modificar -->
                                 <a href="{% url 'donacion-update' donacion.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Modificar">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <!-- Botón para Eliminar, configurado para abrir el modal -->
                                 <button type="button" class="btn btn-sm btn-outline-danger" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#deleteConfirmationModal"
@@ -80,6 +82,7 @@
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </td>
+                            {% endif %}
                         </tr>
                         {# Si la lista está vacía, mostramos este mensaje #}
                         {% empty %}
@@ -97,4 +100,3 @@
 </div>
 
 {% endblock %}
-

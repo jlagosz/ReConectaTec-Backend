@@ -13,102 +13,142 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'app1Backend/css/main.css' %}">
+    
+    <style>
+        .content-wrapper.no-sidebar .main-content,
+        .content-wrapper.no-sidebar .topbar {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+    </style>
 </head>
 <body>
 
-    {% block sidebar %}
-    <nav class="sidebar d-flex flex-column shadow-lg">
-        
-        <div class="sidebar-header text-center py-4">
-            <h4 class="fw-bold text-white mb-0">
-                ReConectaTec
-            </h4>
-            <hr style="border-color: rgba(255,255,255,0.1); margin-top: 15px;">
-        </div>
-
-        <ul class="list-unstyled components flex-grow-1">
+    {% if user.rol != 'Voluntario' %}
+        {% block sidebar %}
+        <nav class="sidebar d-flex flex-column shadow-lg">
             
-            <li class="{% if request.path == '/' or '/dashboard/' in request.path %}active{% endif %}">
-                <a href="{% url 'dashboard' %}" class="nav-link">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
+            <div class="sidebar-header text-center py-4">
+                <h4 class="fw-bold text-white mb-0">
+                    ReConectaTec
+                </h4>
+                <hr style="border-color: rgba(255,255,255,0.1); margin-top: 15px;">
+            </div>
 
-            <li class="{% if '/usuarios/' in request.path %}active{% endif %}">
-                <a href="{% url 'usuario-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Usuarios</span>
-                </a>
-            </li>
+            <ul class="list-unstyled components flex-grow-1">
+                
+                {% if user.rol == 'Administrador' %}
+                <li class="{% if request.path == '/' or '/dashboard/' in request.path %}active{% endif %}">
+                    <a href="{% url 'dashboard' %}" class="nav-link">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                {% endif %}
 
-            <li class="{% if '/instituciones/' in request.path %}active{% endif %}">
-                <a href="{% url 'institucion-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-building"></i>
-                    <span>Instituciones</span>
-                </a>
-            </li>
+                {% if user.rol == 'Administrador' %}
+                <li class="{% if '/usuarios/' in request.path %}active{% endif %}">
+                    <a href="{% url 'usuario-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-users"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
 
-            <li class="{% if '/donaciones/' in request.path %}active{% endif %}">
-                <a href="{% url 'donacion-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-donate"></i>
-                    <span>Donaciones</span>
-                </a>
-            </li>
+                <li class="{% if '/instituciones/' in request.path %}active{% endif %}">
+                    <a href="{% url 'institucion-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-building"></i>
+                        <span>Instituciones</span>
+                    </a>
+                </li>
 
-            <li class="{% if '/equipos/' in request.path %}active{% endif %}">
-                <a href="{% url 'equipo-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-laptop"></i>
-                    <span>Equipos</span>
-                </a>
-            </li>
-            
-            <li class="{% if '/asignaciones/' in request.path %}active{% endif %}">
-                <a href="{% url 'asignacion-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-truck-ramp-box"></i>
-                    <span>Asignaciones</span>
-                </a>
-            </li>
+                <li class="{% if '/asignaciones/' in request.path %}active{% endif %}">
+                    <a href="{% url 'asignacion-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-truck-ramp-box"></i>
+                        <span>Asignaciones</span>
+                    </a>
+                </li>
+                {% endif %}
 
-            <li class="{% if '/reacondicionamientos/' in request.path %}active{% endif %}">
-                <a href="{% url 'reacondicionamiento-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-screwdriver-wrench"></i>
-                    <span>Reacondicionamiento</span>
-                </a>
-            </li>
+                {% if user.rol == 'Administrador' %}
+                <li class="{% if '/donaciones/' in request.path %}active{% endif %}">
+                    <a href="{% url 'donacion-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-donate"></i>
+                        <span>Donaciones</span>
+                    </a>
+                </li>
+                {% endif %}
 
-            <li class="{% if '/soportes/' in request.path %}active{% endif %}">
-                <a href="{% url 'soporte-list' %}" class="nav-link">
-                    <i class="fas fa-fw fa-headset"></i>
-                    <span>Soporte</span>
-                </a>
-            </li>
+                {% if user.rol == 'Administrador' or user.rol == 'Tecnico' %}
+                <li class="{% if '/equipos/' in request.path %}active{% endif %}">
+                    <a href="{% url 'equipo-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-laptop"></i>
+                        <span>Equipos</span>
+                    </a>
+                </li>
+                
+                <li class="{% if '/reacondicionamientos/' in request.path %}active{% endif %}">
+                    <a href="{% url 'reacondicionamiento-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-screwdriver-wrench"></i>
+                        <span>Reacondicionamiento</span>
+                    </a>
+                </li>
 
-        </ul>
-    </nav>
-    {% endblock %}
+                <li class="{% if '/soportes/' in request.path %}active{% endif %}">
+                    <a href="{% url 'soporte-list' %}" class="nav-link">
+                        <i class="fas fa-fw fa-headset"></i>
+                        <span>Soporte</span>
+                    </a>
+                </li>
+                {% endif %}
 
-    <div id="content-wrapper" class="content-wrapper">
+            </ul>
+        </nav>
+        {% endblock %}
+    {% endif %}
+
+    <div id="content-wrapper" class="content-wrapper {% if user.rol == 'Voluntario' %}no-sidebar{% endif %}">
         
         {% block topbar %}
         <nav class="topbar navbar navbar-expand navbar-light bg-white shadow mb-4">
+            
+            {% if user.rol != 'Voluntario' %}
             <button id="sidebarToggle" class="btn btn-link d-md-none me-3">
                 <i class="fa fa-bars"></i>
             </button>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="d-none d-md-block ms-3">
+                <span class="text-gray-600 small">Bienvenido,</span>
+                <span class="fw-bold text-dark">{{ user.nombre }}</span>
+            </div>
+            {% endif %}
+
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" 
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="me-2 d-none d-lg-inline small fw-bold">
+                        
+                        <span class="me-2 d-none d-lg-inline small text-gray-600">
                             {% if user.is_authenticated %}
-                                {{ user.username }}
+                                {{ user.email }} <strong>({{ user.rol }})</strong>
                             {% else %}
                                 Invitado
                             {% endif %}
                         </span>
+                        
                         <i class="fas fa-user-circle fa-lg"></i>
                     </a>
+                    
                     <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in" aria-labelledby="userDropdown">
+                        
+                        <a class="dropdown-item" href="{% url 'perfil-usuario' %}">
+                            <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>
+                            Cuenta de usuario
+                        </a>
+                        
+                        <div class="dropdown-divider"></div>
+                        
                         <form method="post" action="{% url 'logout' %}" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="dropdown-item">
@@ -189,12 +229,12 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Lógica para colapsar sidebar
+            // Lógica para colapsar sidebar (Solo si el botón existe)
             const sidebar = document.querySelector('.sidebar');
             const contentWrapper = document.getElementById('content-wrapper');
             const toggleBtn = document.getElementById('sidebarToggle');
 
-            if (toggleBtn) {
+            if (toggleBtn && sidebar) {
                 toggleBtn.addEventListener('click', function () {
                     sidebar.classList.toggle('active');
                     contentWrapper.classList.toggle('sidebar-collapsed');

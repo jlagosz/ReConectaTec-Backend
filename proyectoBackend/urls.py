@@ -81,6 +81,9 @@ urlpatterns = [
     path('usuarios/modificar/<int:pk>/', views.UsuarioUpdateView.as_view(), name='usuario-update'),
     path('usuarios/eliminar/<int:pk>/', views.UsuarioDeleteView.as_view(), name='usuario-delete'),
 
+    # PERFIL DE USUARIO
+    path('perfil/', views.PerfilUsuarioUpdateView.as_view(), name='perfil-usuario'),
+
     # ----------------------------------------------------
     # 5. RUTAS CRUD (DONACION) - PK es AutoField -> Usar <int:pk>
     # ----------------------------------------------------

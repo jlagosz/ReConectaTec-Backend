@@ -249,3 +249,14 @@ class SoporteForm(forms.ModelForm):
             'id_asignacion': 'Asignación Relacionada',
             'id_tecnico': 'Técnico Asignado',
         }
+
+class PerfilUsuarioForm(forms.ModelForm):
+    """Formulario para que el usuario edite sus propios datos básicos."""
+    class Meta:
+        model = Usuario
+        fields = ['email', 'nombre', 'apellido'] # SOLO estos campos
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'apellido': forms.TextInput(attrs={'class': 'form-control'}),
+        }
