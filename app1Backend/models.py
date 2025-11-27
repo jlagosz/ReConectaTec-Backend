@@ -114,7 +114,7 @@ class Institucion(models.Model):
     telefono = models.CharField(db_column='Telefono', max_length=20, blank=True, null=True)
     direccion = models.CharField(db_column='Direccion', max_length=255, blank=True, null=True)
     comuna = models.CharField(db_column='Comuna', max_length=100, blank=True, null=True)
-    fecha_registro = models.DateField(db_column='Fecha_Registro')
+    fecha_registro = models.DateField(db_column='Fecha_Registro', auto_now_add=True)
 
     class Meta:
         db_table = 'institucion'
@@ -126,7 +126,7 @@ class Donacion(models.Model):
     id_donacion = models.AutoField(db_column='ID_Donacion', primary_key=True)
     # Mantiene DO_NOTHING por la nota de `inspectdb` / DB existente.
     rut_institucion = models.ForeignKey(Institucion, models.DO_NOTHING, db_column='RUT_Institucion')
-    fecha_oferta = models.DateField(db_column='Fecha_Oferta')
+    fecha_oferta = models.DateField(db_column='Fecha_Oferta', auto_now_add=True)
     estado = models.CharField(db_column='Estado', max_length=9)
     total_equipos = models.IntegerField(db_column='Total_Equipos')
 
@@ -162,7 +162,7 @@ class Asignacion(models.Model):
     id_asignacion = models.AutoField(db_column='ID_Asignacion', primary_key=True)
     # Mantiene DO_NOTHING por la nota de `inspectdb` / DB existente.
     rut_institucion_receptora = models.ForeignKey(Institucion, models.DO_NOTHING, db_column='RUT_Institucion_Receptora')
-    fecha_solicitud = models.DateField(db_column='Fecha_Solicitud')
+    fecha_solicitud = models.DateField(db_column='Fecha_Solicitud', auto_now_add=True)
     cantidad_solicitada = models.IntegerField(db_column='Cantidad_Solicitada')
     estado = models.CharField(db_column='Estado', max_length=9)
 
@@ -217,7 +217,7 @@ class Soporte(models.Model):
     # dado que el campo es opcional (blank=True, null=True). Se usa 'Usuario' para referenciar el modelo custom.
     id_tecnico = models.ForeignKey(Usuario, models.SET_NULL, db_column='ID_Tecnico', blank=True, null=True)
     tipo = models.CharField(db_column='Tipo', max_length=12)
-    fecha_evento = models.DateField(db_column='Fecha_Evento')
+    fecha_evento = models.DateField(db_column='Fecha_Evento', auto_now_add=True)
     descripcion = models.TextField(db_column='Descripcion', blank=True, null=True)
     resolucion = models.TextField(db_column='Resolucion', blank=True, null=True)
 

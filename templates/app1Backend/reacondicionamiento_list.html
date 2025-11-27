@@ -16,6 +16,20 @@
         </a>
     </div>
 
+    <form method="get" action="">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Busca por ID del Equipo, Serie del equipo, Nombre del Técnico" value="{{ request.GET.q }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+                {% if request.GET.q %}
+                    <a href="?" class="btn btn-secondary" title="Limpiar búsqueda">
+                        <i class="fas fa-times"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+
     <!-- Tarjeta que contendrá la tabla -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">

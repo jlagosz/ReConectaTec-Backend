@@ -181,11 +181,25 @@ ESTILOS PARA BOTONES Y FORMULARIOS
     box-shadow: none; /* Estilo más plano */
 }
 
-/* =========================================
-ALERTS
-=========================================
-*/
+/* --- ESTILOS PARA NOTIFICACIONES FLOTANTES --- */
+#message-container {
+    max-width: 400px; /* Que no sean extremadamente anchos */
+    animation: slideInRight 0.5s ease-out;
+}
+
 .alert {
-    border-radius: 3px;
-    border: none;
+    background-color: #fff; /* Fondo blanco limpio */
+    color: #333;
+    border-left: 5px solid; /* Borde de color a la izquierda */
+}
+
+/* Colores específicos para el borde izquierdo */
+.alert-success { border-left-color: #198754; } /* Verde */
+.alert-warning { border-left-color: #ffc107; } /* Amarillo */
+.alert-danger  { border-left-color: #dc3545; } /* Rojo */
+.alert-info    { border-left-color: #0dcaf0; } /* Azul */
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }

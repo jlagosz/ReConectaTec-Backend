@@ -123,25 +123,31 @@
         {% endblock %}
 
         <main class="main-content">
+            
             {% if messages %}
-            <div class="container-fluid">
-                <div class="row justify-content-center">
-                    <div class="col-lg-12">
-                        {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {% if message.tags == 'success' %} <i class="fas fa-check-circle me-2"></i>
-                            {% elif message.tags == 'warning' %} <i class="fas fa-triangle-exclamation me-2"></i>
-                            {% elif message.tags == 'error' %} <i class="fas fa-circle-xmark me-2"></i>
-                            {% else %} <i class="fas fa-circle-info me-2"></i> {% endif %}
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div id="message-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050; margin-top: 60px;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-lg border-0" role="alert">
+                    <div class="d-flex align-items-center">
+                        {% if 'success' in message.tags %}
+                            <i class="fas fa-check-circle fa-2x me-3 text-success"></i>
+                        {% elif 'warning' in message.tags %}
+                            <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
+                        {% elif 'error' in message.tags or 'danger' in message.tags %}
+                            <i class="fas fa-times-circle fa-2x me-3 text-danger"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle fa-2x me-3 text-info"></i>
+                        {% endif %}
+                        
+                        <div>
+                            <strong>{{ message|capfirst }}</strong>
                         </div>
-                        {% endfor %}
                     </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+                {% endfor %}
             </div>
             {% endif %}
-
             {% block content %}
             {% endblock %}
         </main>
@@ -180,8 +186,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'app1Backend/js/delete_modal.js' %}" defer></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Lógica para colapsar sidebar
             const sidebar = document.querySelector('.sidebar');
             const contentWrapper = document.getElementById('content-wrapper');
             const toggleBtn = document.getElementById('sidebarToggle');
@@ -192,6 +200,15 @@
                     contentWrapper.classList.toggle('sidebar-collapsed');
                 });
             }
+
+            // Lógica para auto-cerrar alertas después de 4 segundos
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 4000); 
         });
     </script>
 

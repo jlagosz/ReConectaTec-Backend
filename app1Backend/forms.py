@@ -67,7 +67,7 @@ class InstitucionForm(forms.ModelForm):
     
     class Meta:
         model = Institucion
-        fields = '__all__'
+        fields = ['rut', 'nombre', 'tipo', 'contacto_nombre', 'contacto_email', 'telefono', 'direccion', 'comuna']
         widgets = {
             # Los campos CharField se usan con TextInput
             'rut': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 76.123.456-7'}),
@@ -77,8 +77,6 @@ class InstitucionForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: +56912345678'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Av. Siempre Viva 742'}),
             'comuna': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Santiago'}),
-            # DateField usa DateInput con type='date' para el selector nativo del navegador
-            'fecha_registro': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
         labels = {
             'rut': 'RUT/Identificador',
@@ -152,11 +150,10 @@ class DonacionForm(forms.ModelForm):
 
     class Meta:
         model = Donacion
-        fields = '__all__'
+        fields = ['rut_institucion', 'estado', 'total_equipos']
         widgets = {
             # ForeignKey a Institucion se usa con forms.Select
             'rut_institucion': forms.Select(attrs={'class': 'form-select'}),
-            'fecha_oferta': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'total_equipos': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'placeholder': 'Cantidad de equipos'}),
         }
         labels = {
@@ -169,7 +166,7 @@ class EquipoForm(forms.ModelForm):
 
     class Meta:
         model = Equipo
-        fields = '__all__'
+        fields = ['id_donacion', 'num_serie', 'tipo', 'marca', 'modelo', 'ram', 'almacenamiento', 'estado_inicial']
         widgets = {
             'id_donacion': forms.Select(attrs={'class': 'form-select'}),
             'num_serie': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'S/N (Opcional)'}),
@@ -190,10 +187,9 @@ class AsignacionForm(forms.ModelForm):
 
     class Meta:
         model = Asignacion
-        fields = '__all__'
+        fields = ['rut_institucion_receptora', 'cantidad_solicitada', 'estado']
         widgets = {
             'rut_institucion_receptora': forms.Select(attrs={'class': 'form-select'}),
-            'fecha_solicitud': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'cantidad_solicitada': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'placeholder': 'Cantidad de equipos'}),
         }
         labels = {
@@ -203,8 +199,7 @@ class AsignacionForm(forms.ModelForm):
 class DetalleAsignacionForm(forms.ModelForm):
     class Meta:
         model = DetalleAsignacion
-        # Excluir el campo 'id' ya que es un AutoField (PK)
-        fields = '__all__'
+        fields = ['id_asignacion', 'id_equipo', 'fecha_entrega', 'observaciones']
         widgets = {
             'id_asignacion': forms.Select(attrs={'class': 'form-select'}),
             'id_equipo': forms.Select(attrs={'class': 'form-select'}),
@@ -222,8 +217,7 @@ class ReacondicionamientoForm(forms.ModelForm):
 
     class Meta:
         model = Reacondicionamiento
-        # Excluir id_equipo si la vista es Update (porque es la PK), pero lo incluimos para Create
-        fields = '__all__' 
+        fields = ['id_equipo', 'id_tecnico', 'taller_asignado', 'fecha_inicio', 'fecha_fin', 'acciones_realizadas', 'estado_final']
         widgets = {
             # OneToOneField id_equipo es la PK, pero se usa como FK para seleccionar el equipo
             'id_equipo': forms.Select(attrs={'class': 'form-select'}),
@@ -244,11 +238,10 @@ class SoporteForm(forms.ModelForm):
 
     class Meta:
         model = Soporte
-        fields = '__all__'
+        fields = ['id_asignacion', 'id_tecnico', 'tipo', 'descripcion', 'resolucion']
         widgets = {
             'id_asignacion': forms.Select(attrs={'class': 'form-select'}),
             'id_tecnico': forms.Select(attrs={'class': 'form-select'}),
-            'fecha_evento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descripción del problema o la solicitud de soporte.'}),
             'resolucion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Detalle de las acciones tomadas para resolver el problema (Opcional).'}),
         }
