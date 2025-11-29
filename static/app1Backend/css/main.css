@@ -203,3 +203,13 @@ ESTILOS PARA BOTONES Y FORMULARIOS
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+/* --- MEJORA VISUAL PARA CAMPOS READ-ONLY / DISABLED --- */
+.form-control:disabled, .form-control[readonly],
+.form-select:disabled, .form-select[readonly] {
+    background-color: #e9ecef !important; /* Un gris más notorio */
+    color: #495057; /* Texto legible pero grisáceo */
+    opacity: 1; /* Evita que algunos navegadores lo hagan transparente */
+    cursor: not-allowed; /* Muestra el icono de prohibido al pasar el mouse */
+    border-color: #ced4da;
+}

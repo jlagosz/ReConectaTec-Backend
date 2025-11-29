@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from django.utils.html import format_html, mark_safe
 from django.db.models import Q # Importante para búsquedas OR (Nombre O ID)
 from django.contrib.auth import update_session_auth_hash
-
+from .decorators import is_todas_las_cuentas, is_soporte_access
 # --- DECORADORES NECESARIOS ---
 from django.utils.decorators import method_decorator
 # user_passes_test es el decorador clave para chequear roles
@@ -21,7 +21,8 @@ from .forms import (
     InstitucionForm,
     DonacionForm, EquipoForm, 
     AsignacionForm, ReacondicionamientoForm, SoporteForm,
-    CustomUserCreationForm, CustomUserChangeForm, PerfilUsuarioForm, SoporteSolicitudForm
+    CustomUserCreationForm, CustomUserChangeForm, PerfilUsuarioForm, SoporteSolicitudForm, EquipoTecnicoForm, ReacondicionamientoTecnicoForm, 
+    SoporteTecnicoForm, DonacionVoluntarioForm
 )
 
 # =========================================================
@@ -239,7 +240,7 @@ class DonacionListView(ListView):
         if query:
             # Busca por ID de Donación O Nombre de la Institución
             return Donacion.objects.filter(
-                Q(id_donacion__icontains=query) | # Busca por ID numérico
+                Q(id_donacion__icontains=query) |
                 Q(rut_institucion__nombre__icontains=query) | 
                 Q(rut_institucion__rut__icontains=query)
             )
@@ -248,10 +249,19 @@ class DonacionListView(ListView):
 @method_decorator(user_passes_test(is_admin_or_voluntario, login_url=LOGIN_URL), name='dispatch')
 class DonacionCreateView(SuccessMessageCreateView):
     model = Donacion
-    form_class = DonacionForm
     template_name = 'app1Backend/donacion_form.html'
     success_url = reverse_lazy('donacion-list')
     success_message = "¡Donación registrada exitosamente!"
+
+    def get_form_class(self):
+        if self.request.user.rol == 'Voluntario':
+            return DonacionVoluntarioForm
+        return DonacionForm
+
+    def form_valid(self, form):
+        if self.request.user.rol == 'Voluntario':
+            form.instance.estado = 'Pendiente'
+        return super().form_valid(form)
 
 @method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class DonacionUpdateView(SuccessMessageUpdateView):
@@ -307,10 +317,14 @@ class EquipoCreateView(SuccessMessageCreateView):
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class EquipoUpdateView(SuccessMessageUpdateView):
     model = Equipo
-    form_class = EquipoForm
     template_name = 'app1Backend/equipo_form.html'
     success_url = reverse_lazy('equipo-list')
     success_message = "¡Equipo modificado exitosamente!"
+
+    def get_form_class(self):
+        if self.request.user.rol == 'Tecnico':
+            return EquipoTecnicoForm 
+        return EquipoForm 
 
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class EquipoDeleteView(DeleteView):
@@ -407,10 +421,14 @@ class ReacondicionamientoCreateView(SuccessMessageCreateView):
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class ReacondicionamientoUpdateView(SuccessMessageUpdateView):
     model = Reacondicionamiento
-    form_class = ReacondicionamientoForm
     template_name = 'app1Backend/reacondicionamiento_form.html'
     success_url = reverse_lazy('reacondicionamiento-list')
     success_message = "¡Registro de reacondicionamiento modificado!"
+
+    def get_form_class(self):
+        if self.request.user.rol == 'Tecnico':
+            return ReacondicionamientoTecnicoForm
+        return ReacondicionamientoForm
 
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class ReacondicionamientoDeleteView(DeleteView):
@@ -447,21 +465,39 @@ class SoporteListView(ListView):
             )
         return Soporte.objects.all()
 
-@method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
+@method_decorator(user_passes_test(is_soporte_access, login_url=LOGIN_URL), name='dispatch')
 class SoporteCreateView(SuccessMessageCreateView):
     model = Soporte
-    form_class = SoporteSolicitudForm
     template_name = 'app1Backend/soporte_form.html'
-    success_url = reverse_lazy('soporte-list')
-    success_message = "¡Ticket de soporte creado!"
+    # Mensaje de éxito genérico
+    success_message = "¡Ticket de soporte creado exitosamente!"
+
+    def get_form_class(self):
+        # Admin y Técnico usan el formulario completo
+        if self.request.user.rol in ['Administrador', 'Tecnico']:
+            return SoporteForm 
+        # Voluntario usa el formulario corto
+        return SoporteSolicitudForm
+
+    def get_success_url(self):
+        # LÓGICA DE REDIRECCIÓN:
+        # Si es Voluntario, lo devolvemos a su "Home" (Lista de Donaciones)
+        if self.request.user.rol == 'Voluntario':
+            return reverse_lazy('donacion-list')
+        # Si es Admin/Técnico, lo mandamos a la lista de tickets
+        return reverse_lazy('soporte-list')
 
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class SoporteUpdateView(SuccessMessageUpdateView):
     model = Soporte
-    form_class = SoporteForm
     template_name = 'app1Backend/soporte_form.html'
     success_url = reverse_lazy('soporte-list')
     success_message = "¡Ticket de soporte modificado!"
+
+    def get_form_class(self):
+        if self.request.user.rol == 'Tecnico':
+            return SoporteTecnicoForm 
+        return SoporteForm
 
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class SoporteDeleteView(DeleteView):

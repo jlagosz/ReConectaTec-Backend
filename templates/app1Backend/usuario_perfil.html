@@ -23,12 +23,13 @@
                             <div class="input-group">
                                 <input type="text" class="form-control bg-light" value="{{ user.email }}" disabled readonly>
                                 
-                                <a href="{% url 'soporte-create' %}" class="btn btn-warning" title="Reportar un problema técnico">
-                                    <i class="fas fa-ticket-alt me-2"></i>Solicitud cambio de mail
+                                <a href="{% url 'soporte-create' %}" class="btn btn-warning" title="Solicitar cambio de datos o reportar error">
+                                    <i class="fas fa-ticket-alt me-2"></i>Abrir Ticket de Soporte
                                 </a>
                             </div>
                             <div class="form-text text-muted">
-                                El email no se puede modificar. Si necesitas cambiarlo, contacta al administrador usando el botón de reporte.
+                                <i class="fas fa-info-circle me-1"></i>
+                                El email no es editable. Para solicitar un cambio de correo o reportar un problema técnico, utilice el botón <strong>"Abrir Ticket de Soporte"</strong>.
                             </div>
                         </div>
 

@@ -138,7 +138,6 @@ class Donacion(models.Model):
 
 class Equipo(models.Model):
     id_equipo = models.AutoField(db_column='ID_Equipo', primary_key=True)
-    # CORRECCIÓN: Si se elimina la Donación, los Equipos asociados se eliminan (CASCADE).
     id_donacion = models.ForeignKey(Donacion, models.CASCADE, db_column='ID_Donacion')
     num_serie = models.CharField(db_column='Num_Serie', unique=True, max_length=50, blank=True, null=True)
     tipo = models.CharField(db_column='Tipo', max_length=7)
@@ -174,9 +173,7 @@ class Asignacion(models.Model):
 
 class DetalleAsignacion(models.Model):
     id = models.AutoField(primary_key=True)
-    # CORRECCIÓN: Si se elimina la Asignación, los Detalles se eliminan (CASCADE).
     id_asignacion = models.ForeignKey(Asignacion, models.CASCADE, db_column='ID_Asignacion')
-    # CORRECCIÓN: Si se elimina el Equipo, el Detalle se elimina (CASCADE).
     id_equipo = models.OneToOneField(Equipo, models.CASCADE, db_column='ID_Equipo')
     fecha_entrega = models.DateField(db_column='Fecha_Entrega', blank=True, null=True)
     observaciones = models.TextField(db_column='Observaciones', blank=True, null=True)

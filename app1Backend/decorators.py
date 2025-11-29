@@ -93,3 +93,11 @@ def admin_voluntario_required(function=None, login_url=LOGIN_URL):
     if function:
         return actual_decorator(function)
     return actual_decorator
+
+def is_todas_las_cuentas(user):
+    """Permite el acceso a Administrador, Técnico y Voluntario."""
+    return user.is_authenticated and user.rol in ['Administrador', 'Tecnico', 'Voluntario']
+
+def is_soporte_access(user):
+    """Permite entrar a Admin, Técnico y Voluntario."""
+    return user.is_authenticated and user.rol in ['Administrador', 'Tecnico', 'Voluntario']

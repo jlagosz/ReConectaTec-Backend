@@ -253,12 +253,14 @@ class SoporteForm(forms.ModelForm):
         }
 
 class SoporteSolicitudForm(forms.ModelForm):
+    tipo = forms.ChoiceField(choices=TIPO_SOPORTE_CHOICES, widget=forms.Select(attrs={'class': 'form-select'}), label="Tipo de Soporte")
+
     class Meta:
         model = Soporte
         fields = ['id_asignacion', 'tipo', 'descripcion']
         widgets = {
             'id_asignacion': forms.Select(attrs={'class': 'form-select'}),
-            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            # Ya no definimos 'tipo' aquí porque lo hicimos arriba
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe el problema con detalle...'}),
         }
         labels = {
@@ -321,3 +323,94 @@ class PerfilUsuarioForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+# =========================================================
+# NUEVOS FORMULARIOS POR ROL (TÉCNICO / VOLUNTARIO)
+# =========================================================
+
+#  Módulo Equipos - Formulario para Técnico
+class EquipoTecnicoForm(forms.ModelForm):
+    class Meta:
+        model = Equipo
+        fields = ['id_donacion', 'num_serie', 'tipo', 'marca', 'modelo', 'ram', 'almacenamiento', 'estado_inicial']
+        widgets = {
+            'estado_inicial': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'ram': forms.TextInput(attrs={'class': 'form-control'}),
+            'almacenamiento': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        readonly_fields = ['num_serie', 'id_donacion', 'tipo', 'marca', 'modelo']
+        for field in readonly_fields:
+            if field in self.fields:
+                self.fields[field].disabled = True
+                self.fields[field].widget.attrs['class'] = 'form-control bg-light' # Visualmente gris
+
+
+# Módulo Reacondicionamiento - Formulario para Técnico
+class ReacondicionamientoTecnicoForm(forms.ModelForm):
+    estado_final = forms.ChoiceField(
+        choices=ESTADO_FINAL_CHOICES, 
+        widget=forms.Select(attrs={'class': 'form-select'}), 
+        label="Estado Final"
+    )
+    class Meta:
+        model = Reacondicionamiento
+        fields = '__all__'
+        widgets = {
+            'id_tecnico': forms.Select(attrs={'class': 'form-select'}),
+            'taller_asignado': forms.TextInput(attrs={'class': 'form-control'}),
+            'estado_final': forms.Select(attrs={'class': 'form-select'}),
+            'acciones_realizadas': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'id_equipo': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_tecnico'].queryset = Usuario.objects.filter(rol='Tecnico')
+        readonly_fields = ['id_equipo', 'fecha_inicio']
+        for field in readonly_fields:
+            if field in self.fields:
+                self.fields[field].disabled = True
+
+
+# Módulo Soporte - Formulario para Técnico
+class SoporteTecnicoForm(forms.ModelForm):
+    tipo = forms.ChoiceField(
+        choices=TIPO_SOPORTE_CHOICES, 
+        widget=forms.Select(attrs={'class': 'form-select'}), 
+        label="Tipo de Soporte"
+    )
+
+    class Meta:
+        model = Soporte
+        exclude = ['fecha_evento']
+        widgets = {
+            'id_tecnico': forms.Select(attrs={'class': 'form-select'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'resolucion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'id_asignacion': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_tecnico'].queryset = Usuario.objects.filter(rol='Tecnico')
+        readonly_fields = ['id_asignacion', 'tipo']
+        for field in readonly_fields:
+            if field in self.fields:
+                self.fields[field].disabled = True
+
+
+# Voluntario - Formulario de Creación de Donación
+class DonacionVoluntarioForm(forms.ModelForm):
+    class Meta:
+        model = Donacion
+        fields = ['rut_institucion', 'total_equipos'] 
+        widgets = {
+            'rut_institucion': forms.Select(attrs={'class': 'form-select'}),
+            'total_equipos': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+        }
