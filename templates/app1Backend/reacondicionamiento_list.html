@@ -8,7 +8,6 @@
 {% block content %}
 
 <div class="container-fluid">
-    <!-- Encabezado de la página -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Gestión de Reacondicionamientos</h1>
         <a href="{% url 'reacondicionamiento-create' %}" class="btn btn-primary">
@@ -30,7 +29,6 @@
             </div>
         </form>
 
-    <!-- Tarjeta que contendrá la tabla -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Listado de Procesos de Reacondicionamiento</h6>
@@ -46,6 +44,7 @@
                             <th>Fecha de Inicio</th>
                             <th>Fecha de Fin</th>
                             <th>Estado Final</th>
+                            <th>Evidencia</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -68,12 +67,19 @@
                                     <span class="badge bg-danger">{{ item.estado_final }}</span>
                                 {% endif %}
                             </td>
+                            <td>
+                                {% if item.evidencia_final %}
+                                    <a href="{{ item.evidencia_final.url }}" target="_blank" class="btn btn-sm btn-info text-white" title="Ver Evidencia">
+                                        <i class="fas fa-image"></i> Ver
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">Sin foto</span>
+                                {% endif %}
+                            </td>
                             <td class="text-center">
-                                <!-- Botón para Modificar -->
                                 <a href="{% url 'reacondicionamiento-update' item.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Modificar">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <!-- Botón para Eliminar, configurado para abrir el modal -->
                                 <button type="button" class="btn btn-sm btn-outline-danger" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#deleteConfirmationModal"
@@ -86,7 +92,7 @@
                         {# Si la lista está vacía, mostramos este mensaje #}
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="8" class="text-center py-4">
                                 No hay registros de reacondicionamiento todavía.
                             </td>
                         </tr>
@@ -99,4 +105,3 @@
 </div>
 
 {% endblock %}
-

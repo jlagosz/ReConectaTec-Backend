@@ -42,7 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    
+    # --- CLOUDINARY APPS ---
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
+    
+    # --- MIS APPS ---
     'app1Backend',
     'rest_framework',
 ]
@@ -134,15 +140,38 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- CONFIGURACIÓN DE ARCHIVOS MEDIA (CLOUDINARY) ---
+
+# Configuración de credenciales
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
+
+# Configuración moderna de almacenamiento (Django 4.2+)
+STORAGES = {
+    # Archivos subidos por usuarios (Media) -> Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    # Archivos estáticos (CSS/JS) -> Local (Django por defecto)
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Comentado para evitar guardado local accidental
+
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-secondary',
     messages.INFO: 'alert-info',
     messages.SUCCESS: 'alert-success',  # Mapea mensajes.SUCCESS a alert-success de Bootstrap
     messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',    # Mapea mensajes.ERROR a alert-danger de Bootstrap
+    messages.ERROR: 'alert-danger',     # Mapea mensajes.ERROR a alert-danger de Bootstrap
 }
 
 # Rutas de Autenticación de Django

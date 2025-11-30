@@ -146,6 +146,7 @@ class Equipo(models.Model):
     ram = models.CharField(db_column='RAM', max_length=20, blank=True, null=True)
     almacenamiento = models.CharField(db_column='Almacenamiento', max_length=50, blank=True, null=True)
     estado_inicial = models.TextField(db_column='Estado_Inicial', blank=True, null=True)
+    imagen = models.ImageField(upload_to='equipos/', blank=True, null=True, verbose_name="Foto del Equipo")
 
     class Meta:
         db_table = 'equipo'
@@ -195,6 +196,7 @@ class Reacondicionamiento(models.Model):
     fecha_fin = models.DateField(db_column='Fecha_Fin', blank=True, null=True)
     acciones_realizadas = models.TextField(db_column='Acciones_Realizadas', blank=True, null=True)
     estado_final = models.CharField(db_column='Estado_Final', max_length=10)
+    evidencia_final = models.ImageField(upload_to='reacondicionamiento/', blank=True, null=True, verbose_name="Foto del trabajo final")
 
     class Meta:
         db_table = 'reacondicionamiento'

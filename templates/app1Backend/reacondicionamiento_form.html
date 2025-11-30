@@ -27,28 +27,21 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <!-- El formulario se enviará a la URL actual usando el método POST -->
-                    <form method="post">
-                        <!-- Token de seguridad CSRF, obligatorio en Django -->
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        <!-- Usamos un bucle para renderizar cada campo del formulario. -->
                         {% for field in form %}
                             <div class="mb-3">
-                                <!-- Etiqueta del campo -->
                                 {{ field.label_tag }}
                                 
-                                <!-- El campo del formulario (input, select, etc.) -->
                                 {{ field }}
                                 
-                                <!-- Si el campo tiene errores de validación, se muestran aquí -->
                                 {% if field.errors %}
                                     <div class="invalid-feedback d-block">
                                         {{ field.errors.0 }}
                                     </div>
                                 {% endif %}
                                 
-                                <!-- Texto de ayuda para el campo, si existe -->
                                 {% if field.help_text %}
                                     <small class="form-text text-muted">{{ field.help_text }}</small>
                                 {% endif %}
@@ -56,7 +49,6 @@
                         {% endfor %}
 
                         <hr>
-                        <!-- Botones de acción del formulario -->
                         <div class="d-flex justify-content-end">
                             <a href="{% url 'reacondicionamiento-list' %}" class="btn btn-secondary me-2">
                                 <i class="fas fa-times me-2"></i>Cancelar
@@ -73,4 +65,3 @@
 </div>
 
 {% endblock %}
-

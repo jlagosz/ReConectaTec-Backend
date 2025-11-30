@@ -168,7 +168,7 @@ class EquipoForm(forms.ModelForm):
 
     class Meta:
         model = Equipo
-        fields = ['id_donacion', 'num_serie', 'tipo', 'marca', 'modelo', 'ram', 'almacenamiento', 'estado_inicial']
+        fields = ['id_donacion', 'num_serie', 'tipo', 'marca', 'modelo', 'ram', 'almacenamiento', 'estado_inicial', 'imagen']
         widgets = {
             'id_donacion': forms.Select(attrs={'class': 'form-select'}),
             'num_serie': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'S/N (Opcional)'}),
@@ -219,7 +219,7 @@ class ReacondicionamientoForm(forms.ModelForm):
 
     class Meta:
         model = Reacondicionamiento
-        fields = ['id_equipo', 'id_tecnico', 'taller_asignado', 'fecha_inicio', 'fecha_fin', 'acciones_realizadas', 'estado_final']
+        fields = ['id_equipo', 'id_tecnico', 'taller_asignado', 'fecha_inicio', 'fecha_fin', 'acciones_realizadas', 'estado_final', 'evidencia_final']
         widgets = {
             # OneToOneField id_equipo es la PK, pero se usa como FK para seleccionar el equipo
             'id_equipo': forms.Select(attrs={'class': 'form-select'}),
@@ -333,7 +333,7 @@ class PerfilUsuarioForm(forms.ModelForm):
 class EquipoTecnicoForm(forms.ModelForm):
     class Meta:
         model = Equipo
-        fields = ['id_donacion', 'num_serie', 'tipo', 'marca', 'modelo', 'ram', 'almacenamiento', 'estado_inicial']
+        fields = ['id_donacion', 'num_serie', 'tipo', 'marca', 'modelo', 'ram', 'almacenamiento', 'estado_inicial', 'imagen']
         widgets = {
             'estado_inicial': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'ram': forms.TextInput(attrs={'class': 'form-control'}),
