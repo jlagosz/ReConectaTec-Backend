@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import (
     Institucion, Usuario, Donacion, Equipo,
     Asignacion, DetalleAsignacion, Reacondicionamiento, Soporte
@@ -47,6 +47,28 @@ class UsuarioAdmin(UserAdmin): # <-- CAMBIA ModelAdmin por UserAdmin
     )
     # Campos de solo lectura
     readonly_fields = ('fecha_creacion',)
+
+    # --- SEGURIDAD: PROTECCIÓN DE SUPERUSUARIO ---
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Desactiva el botón de eliminar si el usuario que se está viendo es Superusuario.
+        """
+        if obj and obj.is_superuser:
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def delete_queryset(self, request, queryset):
+        """
+        Bloquea la eliminación masiva (seleccionar varios -> eliminar)
+        si en la selección hay al menos un Superusuario.
+        """
+        if queryset.filter(is_superuser=True).exists():
+            # Si hay un superusuario en la lista seleccionada, mostramos error y no hacemos nada.
+            self.message_user(request, "ACCIÓN DENEGADA: No se puede eliminar a Superusuarios desde el panel.", level=messages.ERROR)
+        else:
+            # Si no hay superusuarios, procedemos con el borrado normal.
+            super().delete_queryset(request, queryset)
 
 @admin.register(Donacion)
 class DonacionAdmin(admin.ModelAdmin):
