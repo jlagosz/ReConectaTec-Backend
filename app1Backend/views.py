@@ -7,6 +7,7 @@ from django.utils.html import format_html, mark_safe
 from django.db.models import Q # Importante para búsquedas OR (Nombre O ID)
 from django.contrib.auth import update_session_auth_hash
 from .decorators import is_todas_las_cuentas, is_soporte_access
+from .services import notificar_nuevo_usuario, notificar_ticket_soporte, notificar_actualizacion_perfil, notificar_resolucion_soporte
 # --- DECORADORES NECESARIOS ---
 from django.utils.decorators import method_decorator
 # user_passes_test es el decorador clave para chequear roles
@@ -182,8 +183,22 @@ class UsuarioCreateView(SuccessMessageCreateView):
     form_class = CustomUserCreationForm
     template_name = 'app1Backend/usuario_form.html'
     success_url = reverse_lazy('usuario-list')
-    success_message = "¡Usuario creado exitosamente!"
+    success_message = "¡Usuario creado y notificado por correo!"
 
+    def form_valid(self, form):
+        # 1. Guardamos primero (como querías)
+        response = super().form_valid(form)
+        
+        # 2. Recuperamos la contraseña
+        # IMPORTANTE: Usamos 'form.data' en lugar de 'cleaned_data' porque
+        # 'cleaned_data' se limpia después del save(). Y usamos 'password1'.
+        password_plana = form.data.get('password1') 
+        
+        # 3. Enviamos el correo
+        if password_plana:
+            notificar_nuevo_usuario(self.object, password_plana)
+            
+        return response
 @method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class UsuarioUpdateView(SuccessMessageUpdateView):
     model = Usuario
@@ -191,6 +206,11 @@ class UsuarioUpdateView(SuccessMessageUpdateView):
     template_name = 'app1Backend/usuario_form.html'
     success_url = reverse_lazy('usuario-list')
     success_message = "¡Usuario modificado exitosamente!"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        notificar_actualizacion_perfil(self.object)
+        return response
 
 @method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class UsuarioDeleteView(DeleteView):
@@ -221,10 +241,20 @@ class PerfilUsuarioUpdateView(SuccessMessageUpdateView):
     def form_valid(self, form):
         # Guardamos el usuario con los datos nuevos
         response = super().form_valid(form)
-        
-        # Si el usuario cambió su contraseña, actualizamos la sesión para que no se desconecte
         if form.cleaned_data.get('new_password'):
             update_session_auth_hash(self.request, self.object)
+            
+        return response
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        
+        # Lógica de sesión (que ya tenías)
+        if form.cleaned_data.get('new_password'):
+            update_session_auth_hash(self.request, self.object)
+        
+        # NUEVO: Notificar cambio
+        notificar_actualizacion_perfil(self.object)
             
         return response
 
@@ -469,23 +499,22 @@ class SoporteListView(ListView):
 class SoporteCreateView(SuccessMessageCreateView):
     model = Soporte
     template_name = 'app1Backend/soporte_form.html'
-    # Mensaje de éxito genérico
     success_message = "¡Ticket de soporte creado exitosamente!"
 
     def get_form_class(self):
-        # Admin y Técnico usan el formulario completo
         if self.request.user.rol in ['Administrador', 'Tecnico']:
             return SoporteForm 
-        # Voluntario usa el formulario corto
         return SoporteSolicitudForm
 
     def get_success_url(self):
-        # LÓGICA DE REDIRECCIÓN:
-        # Si es Voluntario, lo devolvemos a su "Home" (Lista de Donaciones)
         if self.request.user.rol == 'Voluntario':
             return reverse_lazy('donacion-list')
-        # Si es Admin/Técnico, lo mandamos a la lista de tickets
         return reverse_lazy('soporte-list')
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        notificar_ticket_soporte(self.object, self.request.user)      
+        return response
 
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class SoporteUpdateView(SuccessMessageUpdateView):
@@ -498,6 +527,14 @@ class SoporteUpdateView(SuccessMessageUpdateView):
         if self.request.user.rol == 'Tecnico':
             return SoporteTecnicoForm 
         return SoporteForm
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        
+        # Notificar a la institución sobre la actualización/resolución
+        notificar_resolucion_soporte(self.object)
+        
+        return response
 
 @method_decorator(user_passes_test(is_admin_or_tecnico, login_url=LOGIN_URL), name='dispatch')
 class SoporteDeleteView(DeleteView):
