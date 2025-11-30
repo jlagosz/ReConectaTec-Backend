@@ -8,7 +8,6 @@
 {% block content %}
 
 <div class="container-fluid">
-    <!-- Encabezado de la página -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Gestión de Usuarios</h1>
         <a href="{% url 'usuario-create' %}" class="btn btn-primary">
@@ -30,7 +29,6 @@
             </div>
         </form>
 
-    <!-- Tarjeta que contendrá la tabla -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Listado de Usuarios del Sistema</h6>
@@ -55,28 +53,37 @@
                             <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
                             <td>{{ usuario.email }}</td>
                             <td>
-                                {# Usamos condicionales para mostrar badges de colores según el rol #}
-                                {% if usuario.rol == 'Administrador' %}
-                                    <span class="badge bg-success">{{ usuario.rol }}</span>
-                                {% elif usuario.rol == 'Tecnico' %}
-                                    <span class="badge bg-primary">{{ usuario.rol }}</span>
+                                {# Lógica visual para Roles y Superusuario #}
+                                {% if usuario.is_superuser %}
+                                    <span class="badge bg-dark">SUPER ADMIN</span>
                                 {% else %}
-                                    <span class="badge bg-secondary">{{ usuario.rol }}</span>
+                                    {% if usuario.rol == 'Administrador' %}
+                                        <span class="badge bg-success">{{ usuario.rol }}</span>
+                                    {% elif usuario.rol == 'Tecnico' %}
+                                        <span class="badge bg-primary">{{ usuario.rol }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ usuario.rol }}</span>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <!-- Botón para Modificar -->
-                                <a href="{% url 'usuario-update' usuario.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Modificar">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
-                                <!-- Botón para Eliminar, configurado para abrir el modal -->
-                                <button type="button" class="btn btn-sm btn-outline-danger" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#deleteConfirmationModal"
-                                        data-bs-item-name="{{ usuario.nombre }} {{ usuario.apellido }}"
-                                        data-bs-delete-url="{% url 'usuario-delete' usuario.pk %}">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                                {% if not usuario.is_superuser %}
+                                    <a href="{% url 'usuario-update' usuario.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Modificar">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteConfirmationModal"
+                                            data-bs-item-name="{{ usuario.nombre }} {{ usuario.apellido }}"
+                                            data-bs-delete-url="{% url 'usuario-delete' usuario.pk %}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                {% else %}
+                                    <span class="text-muted small" title="Este usuario está protegido contra modificaciones">
+                                        <i class="fas fa-lock"></i> Protegido
+                                    </span>
+                                {% endif %}
                             </td>
                         </tr>
                         {# Si la lista está vacía, mostramos este mensaje #}
@@ -95,4 +102,3 @@
 </div>
 
 {% endblock %}
-

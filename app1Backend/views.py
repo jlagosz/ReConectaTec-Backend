@@ -186,19 +186,12 @@ class UsuarioCreateView(SuccessMessageCreateView):
     success_message = "¡Usuario creado y notificado por correo!"
 
     def form_valid(self, form):
-        # 1. Guardamos primero (como querías)
         response = super().form_valid(form)
-        
-        # 2. Recuperamos la contraseña
-        # IMPORTANTE: Usamos 'form.data' en lugar de 'cleaned_data' porque
-        # 'cleaned_data' se limpia después del save(). Y usamos 'password1'.
         password_plana = form.data.get('password1') 
-        
-        # 3. Enviamos el correo
         if password_plana:
             notificar_nuevo_usuario(self.object, password_plana)
-            
         return response
+    
 @method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class UsuarioUpdateView(SuccessMessageUpdateView):
     model = Usuario
@@ -207,17 +200,27 @@ class UsuarioUpdateView(SuccessMessageUpdateView):
     success_url = reverse_lazy('usuario-list')
     success_message = "¡Usuario modificado exitosamente!"
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        notificar_actualizacion_perfil(self.object)
-        return response
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.object.is_superuser:
+            messages.error(request, "ACCIÓN DENEGADA: El Superusuario no puede ser modificado desde aquí.")
+            return redirect('usuario-list')
+            
+        return super().dispatch(request, *args, **kwargs)
 
 @method_decorator(user_passes_test(is_admin, login_url=LOGIN_URL), name='dispatch')
 class UsuarioDeleteView(DeleteView):
     model = Usuario
     success_url = reverse_lazy('usuario-list')
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+
+        if self.object.is_superuser:
+            messages.error(request, "CRÍTICO: No se puede eliminar al Superusuario del sistema.")
+            return redirect(self.success_url)
+        
         try:
             self.object.delete()
             messages.success(request, f"El usuario '{self.object}' fue eliminado exitosamente.")
