@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
-import pymysql
 from django.contrib.messages import constants as messages
 from decouple import config
 
-pymysql.install_as_MySQLdb()
+import pymysql # borrar si se migra
+pymysql.install_as_MySQLdb()# borrar si se migra
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,13 +86,24 @@ WSGI_APPLICATION = 'proyectoBackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+DB_ENGINE = config('DB_ENGINE', default='django.db.backends.mysql')
+
+DB_OPTIONS = {}
+
+if 'mysql' in DB_ENGINE:
+    DB_OPTIONS = {
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+    }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_proyecto_backend',
-        'USER': 'root',
+        'ENGINE': DB_ENGINE,
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT', default='3306'),
+        'OPTIONS': DB_OPTIONS, # <--- Aquí inyectamos la configuración dinámica
     }
 }
 
